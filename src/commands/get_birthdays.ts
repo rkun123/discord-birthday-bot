@@ -1,4 +1,4 @@
-import { sendInteractionResponse, Command } from "../commands.ts";
+import { sendInteractionResponse, Command } from "../command.ts";
 import { getAllBirthdays } from "../store.ts";
 
 const getBirthday: Command = {
@@ -8,7 +8,7 @@ const getBirthday: Command = {
     options: [],
   },
   async handler(bot, interaction) {
-    const birthdays = getAllBirthdays();
+    const birthdays = getAllBirthdays(interaction.guildId!);
     let format = "**メンバーの誕生日リスト🎉**\n";
     format += birthdays.map((b) => `> ${b.nickname}さん: ${b.date}`).join("\n");
     sendInteractionResponse(bot, interaction, format);

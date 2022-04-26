@@ -9,7 +9,7 @@ import {
   enableCacheSweepers,
   EventHandlers,
 } from "../deps.ts";
-import { deployCommands, handleCommandInteraction } from "./commands.ts";
+import { deployCommands, handleCommandInteraction } from "./command.ts";
 import { createTables } from "./store.ts";
 import { handleScheduled } from "./notify.ts";
 
@@ -50,7 +50,6 @@ export const baseBot = createBot({
       console.info(
         `[INFO] user: ${user.username}, guilds: ${guilds.join(", ")}`
       );
-      console.info(user);
 
       if (NOTIFY_MODE) {
         // 通知モード（定期実行された場合）
@@ -60,17 +59,13 @@ export const baseBot = createBot({
 
       // Slash Command モード
       const deployedCommands = await bot.helpers.getApplicationCommands();
-      console.log(
-        "commands:  ",
-        deployedCommands.map((c) => c.name).join(", ")
-      );
+      console.log("commands: ", deployedCommands.map((c) => c.name).join(", "));
 
       // すでにデプロイされているコマンドを削除
-      // deployedCommands.map((c) => bot.helpers.deleteApplicationCommand(c.id));
+      deployedCommands.map((c) => bot.helpers.deleteApplicationCommand(c.id));
 
       // 再デプロイ
       const commands = await deployCommands(bot, guilds);
-      console.log("deployedCommands: ", commands);
     },
     ...eventHandlers,
   },

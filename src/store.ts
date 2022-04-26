@@ -25,14 +25,16 @@ export const db = new DB(`${dbName}.db`);
 export function createTables() {
   db.query(`
   CREATE TABLE IF NOT EXISTS birthday (
-    id INTEGER PRIMARY KEY,
+    id INTEGER,
+    guild_id INTEGER NOT NULL,
     nickname STRING,
     date STRING
   )
 `);
   db.query(`
   CREATE TABLE IF NOT EXISTS notify_channel (
-    channel_id INTEGER UNIQUE PRIMARY KEY,
+    channel_id INTEGER PRIMARY KEY,
+    guild_id INTEGER NOT NULL,
     name STRING
   )
 `);
@@ -43,14 +45,14 @@ export function createTables() {
  */
 export function updateBirthDay(
   discordUserID: bigint,
+  guildID: bigint,
   nickname: string,
   birthDay: string
 ) {
-  db.query("REPLACE INTO birthday (id, nickname, date) VALUES (?,?,?)", [
-    discordUserID,
-    nickname,
-    birthDay,
-  ]);
+  db.query(
+    "REPLACE INTO birthday (id, guild_id, nickname, date) VALUES (?,?,?,?)",
+    [discordUserID, guildID, nickname, birthDay]
+  );
 }
 
 /**
@@ -59,7 +61,7 @@ export function updateBirthDay(
  */
 export function getAllUsersByBirthDayLike(birthDay: string): BirthDay[] {
   const rows = db.query(
-    "SELECT id, nickname, date FROM birthday WHERE date LIKE ?",
+    "SELECT id, guild_id, nickname, date FROM birthday WHERE date LIKE ?",
     [birthDay]
   );
   return rows.map(birthDayFromRow);
@@ -68,9 +70,10 @@ export function getAllUsersByBirthDayLike(birthDay: string): BirthDay[] {
 /**
  * すべてのメンバーの誕生日を取得
  */
-export function getAllBirthdays(): BirthDay[] {
+export function getAllBirthdays(guildID: bigint): BirthDay[] {
   const rows = db.query(
-    "SELECT id, nickname, date FROM birthday ORDER BY date ASC"
+    "SELECT id, guild_id, nickname, date FROM birthday WHERE guild_id = ? ORDER BY date ASC",
+    [guildID]
   );
   return rows.map(birthDayFromRow);
 }
@@ -78,8 +81,11 @@ export function getAllBirthdays(): BirthDay[] {
 /**
  *
  */
-export function getAllNotifyChannels(): NotifyChannel[] {
-  const rows = db.query("SELECT channel_id, name FROM notify_channel");
+export function getAllNotifyChannels(guildID: bigint): NotifyChannel[] {
+  const rows = db.query(
+    "SELECT channel_id, guild_id, name FROM notify_channel WHERE guild_id = ?",
+    [guildID]
+  );
   return rows.map(notifyChannelFromRow);
 }
 
@@ -95,10 +101,10 @@ export function insertNotifyChannel(notifyChannel: NotifyChannel) {
   ) {
     throw new Error("そのチャンネルはすでに登録されています");
   }
-  db.query("INSERT INTO notify_channel(channel_id, name) VALUES (?, ?)", [
-    notifyChannel.channelID,
-    notifyChannel.name,
-  ]);
+  db.query(
+    "INSERT INTO notify_channel(channel_id, guild_id, name) VALUES (?, ?, ?)",
+    [notifyChannel.channelID, notifyChannel.guildID, notifyChannel.name]
+  );
 }
 
 /**
@@ -113,5 +119,5 @@ export function deleteNotifyChannel(channelID: bigint) {
   ) {
     throw new Error("そのチャンネルは登録されていません");
   }
-  db.query("DELETE notify_channel WHERE channel_id = ?", [channelID]);
+  db.query("DELETE FROM notify_channel WHERE channel_id = ?", [channelID]);
 }

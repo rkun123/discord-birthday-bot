@@ -40,8 +40,9 @@ export function dateToString(date: Date): string {
 export function birthDayFromRow(row: Row): BirthDay {
   return {
     discordUserID: row.at(0) as bigint,
-    nickname: row.at(1) as string,
-    date: row.at(2) as string,
+    guildID: row.at(1) as bigint,
+    nickname: row.at(2) as string,
+    date: row.at(3) as string,
   };
 }
 
@@ -53,7 +54,8 @@ export function birthDayFromRow(row: Row): BirthDay {
 export function notifyChannelFromRow(row: Row): NotifyChannel {
   return {
     channelID: row.at(0) as bigint,
-    name: row.at(1) as string,
+    guildID: row.at(1) as bigint,
+    name: row.at(2) as string,
   };
 }
 

@@ -2,7 +2,7 @@ import {
   sendInteractionResponse,
   sendErrorInteractionResponse,
   Command,
-} from "../commands.ts";
+} from "../command.ts";
 import {
   ApplicationCommandOptionTypes,
   ApplicationCommandTypes,
@@ -53,6 +53,7 @@ const birthday: Command = {
       }
       updateBirthDay(
         interaction.member!.id,
+        interaction.guildId!,
         interaction.member?.nick || interaction.user.username || "unknown",
         birthday
       );

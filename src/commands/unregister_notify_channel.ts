@@ -3,18 +3,18 @@ import {
   sendInteractionResponse,
   sendErrorInteractionResponse,
   Command,
-} from "../commands.ts";
-import { insertNotifyChannel } from "../store.ts";
+} from "../command.ts";
+import { deleteNotifyChannel } from "../store.ts";
 
-const notifyChannel: Command = {
+const unregisterNotifyChannel: Command = {
   createApplicationCommand: {
-    name: "notify-channel",
-    description: "誕生日を知らせるチャンネルを登録する",
+    name: "unregister-notify-channel",
+    description: "誕生日を知らせるチャンネルを登録解除する",
     options: [
       {
         type: ApplicationCommandOptionTypes.Channel,
         name: "チャンネル",
-        description: "誕生日を知らせるチャンネル",
+        description: "解除するチャンネル",
         required: true,
       },
     ],
@@ -38,14 +38,11 @@ const notifyChannel: Command = {
     }
     // Register birthday
     try {
-      insertNotifyChannel({
-        channelID: channelID,
-        name: channel.name || "unknown",
-      });
+      deleteNotifyChannel(channelID);
       sendInteractionResponse(
         bot,
         interaction,
-        "お知らせチャンネルを登録しました"
+        "お知らせチャンネルの登録を解除しました"
       );
     } catch (e) {
       sendErrorInteractionResponse(bot, interaction, e.message);
@@ -53,4 +50,4 @@ const notifyChannel: Command = {
   },
 };
 
-export default notifyChannel;
+export default unregisterNotifyChannel;

@@ -1,10 +1,10 @@
 import type { Bot, CreateApplicationCommand, Interaction } from "../deps.ts";
 import { updateBirthDay, getAllBirthdays } from "./store.ts";
 
-import birthday from "./command/birthday.ts";
-import getBirthdays from "./command/get_birthdays.ts";
-import notifyChannel from "./command/notify_channel.ts";
-import unregisterNotifyChannel from "./command/unregister_notify_channel.ts";
+import birthday from "./commands/birthday.ts";
+import getBirthdays from "./commands/get_birthdays.ts";
+import notifyChannel from "./commands/notify_channel.ts";
+import unregisterNotifyChannel from "./commands/unregister_notify_channel.ts";
 
 import {
   InteractionResponseTypes,
@@ -31,23 +31,23 @@ const commands: Command[] = [
 
 /**
  * スラッシュコマンドを登録する
+ *
  * @param bot Bot
  * @returns
  */
 export async function deployCommands(bot: Bot, guilds: bigint[]) {
   console.info("Deploy commands");
-  return Promise.all(
-    commands.map(
-      async (command) =>
-        await bot.helpers.createApplicationCommand(
-          command.createApplicationCommand
-        )
+  await Promise.all(
+    commands.map((command) =>
+      bot.helpers.createApplicationCommand(command.createApplicationCommand)
     )
   ).catch(console.error);
+  console.debug("Deployed");
 }
 
 /**
  * Slash Commandへの返信を作成
+ *
  * @param bot
  * @param interaction
  * @param message
