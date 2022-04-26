@@ -42,7 +42,7 @@ const unregisterNotifyChannel: Command = {
       sendInteractionResponse(
         bot,
         interaction,
-        "お知らせチャンネルを登録しました"
+        "お知らせチャンネルの登録を解除しました"
       );
     } catch (e) {
       sendErrorInteractionResponse(bot, interaction, e.message);

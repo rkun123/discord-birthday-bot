@@ -66,7 +66,7 @@ export const baseBot = createBot({
       );
 
       // すでにデプロイされているコマンドを削除
-      // deployedCommands.map((c) => bot.helpers.deleteApplicationCommand(c.id));
+      deployedCommands.map((c) => bot.helpers.deleteApplicationCommand(c.id));
 
       // 再デプロイ
       const commands = await deployCommands(bot, guilds);
