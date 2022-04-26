@@ -3,7 +3,7 @@ import {
   sendInteractionResponse,
   sendErrorInteractionResponse,
   Command,
-} from "../commands.ts";
+} from "../command.ts";
 import { insertNotifyChannel } from "../store.ts";
 
 const notifyChannel: Command = {
@@ -40,6 +40,7 @@ const notifyChannel: Command = {
     try {
       insertNotifyChannel({
         channelID: channelID,
+        guildID: interaction.guildId!,
         name: channel.name || "unknown",
       });
       sendInteractionResponse(

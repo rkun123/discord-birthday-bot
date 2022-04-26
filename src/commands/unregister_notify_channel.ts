@@ -3,7 +3,7 @@ import {
   sendInteractionResponse,
   sendErrorInteractionResponse,
   Command,
-} from "../commands.ts";
+} from "../command.ts";
 import { deleteNotifyChannel } from "../store.ts";
 
 const unregisterNotifyChannel: Command = {
