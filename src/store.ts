@@ -42,6 +42,11 @@ export function createTables() {
 
 /**
  * 誕生日の追加、更新
+ *
+ * @param discordUserID
+ * @param guildID
+ * @param nickname
+ * @param birthDay 誕生日（yyyy/mm/ddのフォーマットのstring）
  */
 export function updateBirthDay(
   discordUserID: bigint,
@@ -49,8 +54,21 @@ export function updateBirthDay(
   nickname: string,
   birthDay: string
 ) {
+  const countRows = db.query(
+    "SELECT COUNT(*) FROM birthday WHERE id = ? AND guild_id = ?",
+    [discordUserID, guildID]
+  );
+  const count = countRows[0].at(0) as number;
+  if (count > 0) {
+    // すでに登録済みなので、登録済みの誕生日をすべて削除
+    console.debug(`DELETE ${count} records`);
+    db.query("DELETE FROM birthday WHERE id = ? AND guild_id = ?", [
+      discordUserID,
+      guildID,
+    ]);
+  }
   db.query(
-    "REPLACE INTO birthday (id, guild_id, nickname, date) VALUES (?,?,?,?)",
+    "INSERT INTO birthday (id, guild_id, nickname, date) VALUES (?,?,?,?)",
     [discordUserID, guildID, nickname, birthDay]
   );
 }
@@ -79,6 +97,7 @@ export function getAllBirthdays(guildID: bigint): BirthDay[] {
 }
 
 /**
+ * 指定したギルドで登録されている通知するチャンネルをすべて取得
  *
  */
 export function getAllNotifyChannels(guildID: bigint): NotifyChannel[] {
@@ -91,6 +110,7 @@ export function getAllNotifyChannels(guildID: bigint): NotifyChannel[] {
 
 /**
  * お知らせチャンネルを追加する
+ *
  * @param notifyChannel
  */
 export function insertNotifyChannel(notifyChannel: NotifyChannel) {
@@ -109,6 +129,7 @@ export function insertNotifyChannel(notifyChannel: NotifyChannel) {
 
 /**
  * お知らせチャンネルを解除する
+ *
  * @param channelID
  */
 export function deleteNotifyChannel(channelID: bigint) {
